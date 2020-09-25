@@ -26,7 +26,8 @@ class LoadData:
 
     def process(self, n_series=20, T_pred=10, n_cols=40, n_rows=30, T_space=10, plot=True):
         """This is the bulk of the processing task. Here, the time series of each evaluated stock value is processed,
-        transformed into datasamples made up of binary images of the input price series"""
+        transformed into datasamples made up of binary images of the input price series as well as an output boolean
+        indicating if the price rises or falls after the prediction time"""
         self.time = self.unprocessed.index.tolist()
         self.Xordered = np.zeros((1, len(self.tickers), n_rows, n_cols))
         self.Yordered = np.zeros((1, len(self.tickers)))
@@ -61,6 +62,7 @@ class LoadData:
 
     @staticmethod
     def binary_image(data, n_cols, n_rows):
+        """This simple function is in charge of the conversion of a time series of data into its binary image equivalent"""
         X = np.linspace(0, len(data), n_cols)
         Y = np.linspace(np.max(data), np.min(data), n_rows)
         image = np.zeros((1, 1, n_rows, n_cols))
@@ -90,11 +92,25 @@ class LoadData:
         ax[1].set_xlabel('t [-]', fontsize=24)
         ax[1].tick_params(axis='both', labelsize=18)
 
+    def cut_and_shuffle(self):
+        """This simple function separates the original ordered dataset into a training and a testing datasets, after having
+        shuffled it appropriately."""
+        index = np.random.permutation(self.Xordered.shape[0])
+        self.Xtrain = self.Xordered[index[:int(len(index) * 0.8)]]
+        self.Ytrain = self.Yordered[index[:int(len(index) * 0.8)]]
+        self.Xtest = self.Xordered[index[int(len(index) * 0.8):]]
+        self.Ytest = self.Yordered[index[int(len(index) * 0.8):]]
 
+        print(str(int(len(index) * 0.8)) + ' data samples in training dataset, ' + str(len(index) - int(len(index) * 0.8)) + ' data samples in test dataset.')
+        np.save(self.folder + '/Xtrain.npy', self.Xtrain)
+        np.save(self.folder + '/Ytrain.npy', self.Ytrain)
+        np.save(self.folder + '/Xtest.npy', self.Xtest)
+        np.save(self.folder + '/Ytest.npy', self.Ytest)
 
 
 ld = LoadData(['AAPL', 'AMZN'])
 ld.download()
 ld.process()
+ld.cut_and_shuffle()
 plt.show()
 
