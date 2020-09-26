@@ -29,8 +29,15 @@ class LoadData:
         transformed into datasamples made up of binary images of the input price series as well as an output boolean
         indicating if the price rises or falls after the prediction time"""
         self.time = self.unprocessed.index.tolist()
+
+        #Shape of X: (Number of datasamples, Number of tickers, Number of rows, Number of columns)
+        #Shape of Y: (Number of datasamples, Number of tickers)
         self.Xordered = np.zeros((1, len(self.tickers), n_rows, n_cols))
         self.Yordered = np.zeros((1, len(self.tickers)))
+
+        self.subfolder = '/case' + str(n_series) + '_' + str(T_pred) + '_' + str(n_cols) + '_' + str(n_rows) + '_' + str(T_space)
+        if not os.path.exists(self.folder + self.subfolder):
+            os.makedirs(self.folder + self.subfolder)
 
         T = 0
         while max(T, T + n_series + T_pred) < len(self.time):
@@ -50,14 +57,15 @@ class LoadData:
                 self.Yordered = np.concatenate((self.Yordered, y_i), axis=0)
 
                 if plot and i == 0:
-                    self.plot_image(prices, image)
+                    fig = self.plot_image(prices, image)
+                    fig.savefig(self.folder + self.subfolder + '/Binarization of Graph.jpg')
                     plot = False
             T += T_space
 
         self.Xordered = self.Xordered[1:]
         self.Yordered = self.Yordered[1:]
-        np.save(self.folder + '/Xordered.npy', self.Xordered)
-        np.save(self.folder + '/Yordered.npy', self.Yordered)
+        # np.save(self.folder + self.subfolder + '/Xordered.npy', self.Xordered)
+        # np.save(self.folder + self.subfolder + '/Yordered.npy', self.Yordered)
 
 
     @staticmethod
@@ -91,6 +99,7 @@ class LoadData:
         ax[1].set_title('Resulting Binary Image', fontsize=24)
         ax[1].set_xlabel('t [-]', fontsize=24)
         ax[1].tick_params(axis='both', labelsize=18)
+        return fig
 
     def cut_and_shuffle(self):
         """This simple function separates the original ordered dataset into a training and a testing datasets, after having
@@ -102,10 +111,10 @@ class LoadData:
         self.Ytest = self.Yordered[index[int(len(index) * 0.8):]]
 
         print(str(int(len(index) * 0.8)) + ' data samples in training dataset, ' + str(len(index) - int(len(index) * 0.8)) + ' data samples in test dataset.')
-        np.save(self.folder + '/Xtrain.npy', self.Xtrain)
-        np.save(self.folder + '/Ytrain.npy', self.Ytrain)
-        np.save(self.folder + '/Xtest.npy', self.Xtest)
-        np.save(self.folder + '/Ytest.npy', self.Ytest)
+        np.save(self.folder + self.subfolder + '/Xtrain.npy', self.Xtrain)
+        np.save(self.folder + self.subfolder + '/Ytrain.npy', self.Ytrain)
+        np.save(self.folder + self.subfolder + '/Xtest.npy', self.Xtest)
+        np.save(self.folder + self.subfolder + '/Ytest.npy', self.Ytest)
 
 
 ld = LoadData(['AAPL', 'AMZN'])
