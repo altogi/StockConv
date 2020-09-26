@@ -2,7 +2,7 @@ from torch import nn
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from torch import nn,optim
+from torch import nn, optim
 from torch.utils.data import Dataset, DataLoader
 
 
@@ -103,4 +103,47 @@ class Trainer:
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
 
         self.train_loader = torch.utils.data.DataLoader(dataset=self.train_data, batch_size=75, shuffle=True)
-        validation_loader = torch.utils.data.DataLoader(dataset=self.test_data, batch_size=40, shuffle=True)
+        self.test_loader = torch.utils.data.DataLoader(dataset=self.test_data, batch_size=500, shuffle=True)
+
+        self.loss = []
+        self.accuracy = []
+
+    def epoch(self):
+        for x, y in self.train_loader:
+            self.optimizer.zero_grad()
+            z = self.model(x)
+            loss = self.criterion(z, y)
+            loss.backward()
+            self.optimizer.step()
+
+        correct = 0
+        # perform a prediction on the test  data
+        for x_test, y_test in self.test_loader:
+            z = self.model(x_test)
+            _, yhat = torch.max(z.data, 1)
+            correct += (yhat == y_test).sum().item()
+        accuracy = correct / len(self.test_data)
+        self.accuracy.append(accuracy)
+        self.loss.append(loss.data)
+
+    def train(self, epochs=100, plot=True):
+        for e in range(epochs):
+            self.epoch()
+
+        if plot:
+            fig, ax = plt.subplots(1, 2)
+            fig.set_size_inches(16, 8)
+            # fig.tight_layout()
+
+            ax[0].set_xlabel('Epochs [-]', fontsize=24)
+            ax[0].grid(True)
+            ax[0].set_ylabel('Closing Stock Price [$]', fontsize=20)
+            ax[0].tick_params(axis='both', labelsize=18)
+            ax[0].set_title('Unprocessed Stock Price', fontsize=24)
+            t = np.arange(len(data)) + 1
+            ax[0].plot(t, data)
+
+            ax[1].imshow(image[0, 0, :, :], cmap=plt.cm.binary)
+            ax[1].set_title('Resulting Binary Image', fontsize=24)
+            ax[1].set_xlabel('t [-]', fontsize=24)
+            ax[1].tick_params(axis='both', labelsize=18)
