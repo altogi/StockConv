@@ -24,7 +24,7 @@ class LoadData:
 
         self.unprocessed.to_csv(path_or_buf=self.folder + '/UnprocessedData.csv', header=True)
 
-    def process(self, n_series=20, T_pred=10, n_cols=40, n_rows=30, T_space=10, plot=True):
+    def process(self, n_series=20, T_pred=10, n_cols=30, n_rows=30, T_space=10, plot=True):
         """This is the bulk of the processing task. Here, the time series of each evaluated stock value is processed,
         transformed into datasamples made up of binary images of the input price series as well as an output boolean
         indicating if the price rises or falls after the prediction time"""
@@ -117,9 +117,8 @@ class LoadData:
         np.save(self.folder + self.subfolder + '/Ytest.npy', self.Ytest)
 
 
-ld = LoadData(['AAPL', 'AMZN'])
-ld.download()
-ld.process()
-ld.cut_and_shuffle()
-plt.show()
-
+# ld = LoadData(['AAPL', 'AMZN'])
+# ld.download()
+# ld.process()
+# ld.cut_and_shuffle()
+# plt.show()
