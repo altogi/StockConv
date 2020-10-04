@@ -35,6 +35,8 @@ class LoadData:
         self.Xordered = np.zeros((1, len(self.tickers), n_rows, n_cols))
         self.Yordered = np.zeros((1, len(self.tickers)))
 
+        self.original = []
+
         self.subfolder = '/case' + str(n_series) + '_' + str(T_pred) + '_' + str(n_cols) + '_' + str(n_rows) + '_' + str(T_space)
         if not os.path.exists(self.folder + self.subfolder):
             os.makedirs(self.folder + self.subfolder)
@@ -43,6 +45,7 @@ class LoadData:
         while max(T, T + n_series + T_pred) < len(self.time):
             data = self.unprocessed.iloc[T:T + n_series]
             pred = self.unprocessed.iloc[T + n_series + T_pred]
+            self.original.append(self.unprocessed.iloc[T:T + n_series + T_pred + 1][self.tickers].values)
 
             x_i = np.zeros((1, len(self.tickers), n_rows, n_cols))
             y_i = np.zeros((1, len(self.tickers)))
@@ -50,16 +53,17 @@ class LoadData:
                 prices = data[tick].values
                 image = self.binary_image(prices, n_cols, n_rows)
                 x_i[:, i, :, :] = image
-                self.Xordered = np.concatenate((self.Xordered, x_i), axis=0)
 
                 y = (pred[tick] > prices[-1]) * 1
                 y_i[:, i] = y
-                self.Yordered = np.concatenate((self.Yordered, y_i), axis=0)
 
                 if plot and i == 0:
                     fig = self.plot_image(prices, image)
                     fig.savefig(self.folder + self.subfolder + '/Binarization of Graph.jpg')
                     plot = False
+
+            self.Xordered = np.concatenate((self.Xordered, x_i), axis=0)
+            self.Yordered = np.concatenate((self.Yordered, y_i), axis=0)
             T += T_space
 
         self.Xordered = self.Xordered[1:]
@@ -109,12 +113,14 @@ class LoadData:
         self.Ytrain = self.Yordered[index[:int(len(index) * 0.8)]]
         self.Xtest = self.Xordered[index[int(len(index) * 0.8):]]
         self.Ytest = self.Yordered[index[int(len(index) * 0.8):]]
+        self.original = [self.original[i] for i in index[int(len(index) * 0.8):]]
 
         print(str(int(len(index) * 0.8)) + ' data samples in training dataset, ' + str(len(index) - int(len(index) * 0.8)) + ' data samples in test dataset.')
         np.save(self.folder + self.subfolder + '/Xtrain.npy', self.Xtrain)
         np.save(self.folder + self.subfolder + '/Ytrain.npy', self.Ytrain)
         np.save(self.folder + self.subfolder + '/Xtest.npy', self.Xtest)
         np.save(self.folder + self.subfolder + '/Ytest.npy', self.Ytest)
+        np.save(self.folder + self.subfolder + '/original.npy', self.original)
 
 
 # ld = LoadData(['AAPL', 'AMZN'])

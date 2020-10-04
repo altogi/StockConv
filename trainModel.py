@@ -7,6 +7,9 @@ from torch.utils.data import Dataset, DataLoader
 from LoadData import LoadData
 import pandas as pd
 
+# This script here contains on the one hand the class in charge of defining a PyTorch dataset based on data stored with
+# LoadData.py, the class defining the CNN which interprets the data in order to carry out a prognosis, and a Trainer class
+# which carries out the training the CNN based on the specified dataset.
 
 class Data(Dataset):
     """This class simply loads the previously stored data according to the specified parameters, creating a Pytorch
@@ -18,6 +21,7 @@ class Data(Dataset):
                       '/case' + str(n_series) + '_' + str(T_pred) + '_' + str(n_cols) + '_' + str(n_rows) + '_' + str(T_space)
 
         try:
+            self.original = np.load(self.folder + '/original.npy')
             if train:
                 self.x = np.load(self.folder + '/Xtrain.npy')
                 self.y = np.load(self.folder + '/Ytrain.npy')
@@ -27,12 +31,12 @@ class Data(Dataset):
         except:
             ld = LoadData(tickers, start, end, interval)
             try:
-                a = pd.read_csv('./' + ''.join(tickers) + '_start' + start + '_end' + end + '_int' + interval + '/UnprocessedData.csv')
+                ld.unprocessed = pd.read_csv('./' + ''.join(tickers) + '_start' + start + '_end' + end + '_int' + interval + '/UnprocessedData.csv')
             except:
                 print('DOWNLOADING DATA')
                 ld.download()
             print('PROCESSING DATA')
-            ld.process(n_series, T_pred, n_cols, n_rows, T_space, plot=False)
+            ld.process(n_series, T_pred, n_cols, n_rows, T_space, plot=True)
             ld.cut_and_shuffle()
 
             if train:
@@ -41,6 +45,7 @@ class Data(Dataset):
             else:
                 self.x = ld.Xtest
                 self.y = ld.Ytest
+            self.original = ld.original
 
         # Shape of X: (Number of datasamples, Number of tickers, Number of rows, Number of columns)
         # Shape of Y: (Number of datasamples, Number of tickers)
@@ -124,9 +129,13 @@ class CNN(nn.Module):
         return tuple(padd), tuple(output), tuple(kernel)
 
 class Trainer:
+    """This class containes the bulk of the model's training, since it creates the dataset and the CNN and iterates through
+    the specified epochs in order to train the model."""
     def __init__(self, tickers, predict=0, start='2014-01-01', end='2018-01-01', interval='1d', n_series=20, T_pred=10, n_cols=30, n_rows=30, T_space=10):
         self.tickers = tickers
         self.predict = predict #Predict indexes tickers, indicating which of the securities to model/predict
+        self.n_series = n_series
+        self.T_pred = T_pred
 
         self.folder = './' + ''.join(tickers) + '_start' + start + '_end' + end + '_int' + interval + \
                       '/case' + str(n_series) + '_' + str(T_pred) + '_' + str(n_cols) + '_' + str(n_rows) + '_' + str(
@@ -168,7 +177,7 @@ class Trainer:
         self.accuracy.append(accuracy)
         self.loss.append(loss.item())
 
-    def train(self, epochs=600, plot=True):
+    def train(self, epochs=1000, plot=True):
         print('MODEL TRAINING')
         self.model = self.model.float()
         for e in range(epochs):
@@ -194,9 +203,53 @@ class Trainer:
             ax[1].tick_params(axis='both', labelsize=18)
             ax[1].set_title('Evolution of Model Accuracy with Training', fontsize=24)
             ax[1].plot(self.accuracy)
+            fig.savefig(self.folder + '/Training.jpg')
 
         torch.save(self.model.state_dict(), self.folder + '/TrainedModel')
 
-t = Trainer(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], start='2000-01-01', end='2010-01-01')
-t.train()
-plt.show()
+    def visualize_execution(self):
+        data = np.zeros((1, 2))
+        correct = np.zeros((1, 2))
+        incorrect = np.zeros((1, 2))
+        self.loader = torch.utils.data.DataLoader(dataset=self.test_data, batch_size=1, shuffle=False)
+        for i, r in enumerate(self.loader):
+            x = r[0]
+            y = r[1]
+            y = y[:, self.predict]
+            z = self.model(x)
+            _, yhat = torch.max(z.data, 1)
+            series = self.test_data.original[i][:, self.predict]
+
+            index = np.arange(len(series)) + data[-1, 0]
+
+            newD = np.vstack((index, series))
+            data = np.vstack((data, np.transpose(newD)))
+
+            if yhat == y:
+                correct = np.vstack((correct, np.array([index[-1], series[-1]])))
+            else:
+                incorrect = np.vstack((incorrect, np.array([index[-1], series[-1]])))
+
+        fig, ax = plt.subplots()
+        fig.set_size_inches(30, 8)
+        # fig.tight_layout()
+
+        ax.set_xlabel('t [-]', fontsize=24)
+        ax.grid(True)
+        ax.set_ylabel(self.tickers[self.predict] + ' Price [-]', fontsize=20)
+        ax.tick_params(axis='both', labelsize=18)
+        ax.set_title('Visualization of Model Performance', fontsize=24)
+        ax.plot(data[:, 0], data[:, 1])
+        ax.scatter(correct[:, 0], correct[:, 1], marker='*', c='green', s=75)
+        ax.scatter(incorrect[:, 0], incorrect[:, 1], marker='X', c='red', s=75)
+
+
+# t = Trainer(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], start='2000-01-01', end='2010-01-01')
+# tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
+# start = '2020-08-05'
+# end = '2020-10-03'
+# interval = '5m'
+# t = Trainer(tickers, 2, start, end, interval)
+# t.train()
+# t.visualize_execution()
+# plt.show()
