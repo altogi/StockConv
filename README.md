@@ -63,3 +63,30 @@ When carrying out the binarization of the dataset with n_{rows} = n_{cols} = 30,
 For other values of T_{prediction}, a variable directly setting how far ahead the particular trend is predicted, the trained CNN performed as is shown in the image below.
 
 ![image info](./Images/optim1.png)
+
+## Dataset 2
+The second dataset employed in this study is made up of the following share prices:
+* Alphabet Inc. (GOOG)
+* Microsoft Corporation (MSFT)
+* Apple Inc. (AAPL)
+* Amazon.com, Inc. (AMZN)
+* Mastercard Inc. (MA)
+* Visa Inc. (V)
+* Tesla Inc. (TSLA)
+* Alibaba Group Holding Ltd. (BABA)
+* JD.Com Inc. (JD)
+* NetEase Inc. (NTES)
+* NVIDIA Corporation (NVDA)
+* Zalando SE (ZLDSF)
+* salesforce.com, inc. (CRM)
+* Amgen, Inc. (AMGN)
+* Honeywell International Inc. (HON)
+* Advanced Micro Devices, Inc. (AMD)
+* Kirkland Lake Gold Ltd. (KL)
+* Shopify Inc. (SHOP)
+* RingCentral Inc. (RNG)
+
+These were extracted with a time interval of 5 minutes, from August the 5th to October the 3rd of 2020.
+
+### Optimum Results
+When carrying out the binarization of the dataset with n_{rows} = n_{cols} = 30, n_{series} = 30, and T_{prediction} = 15 days, the model predicted the evolution of the last time series with an accuracy of 61%. This selection of parameters was obtained by means of an intensive parametric study.
