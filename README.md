@@ -1,9 +1,5 @@
 # StockConv
 
-## Script Description
-
-
-
 ## Operating Principle
 This project implements a method of algorithmic trading or time series prediction based on the conversion of time series data into a binary image. Based on the binary images of several share prices (or any combination of temporal trends), one can train a Convolutional Neural Network (CNN) to predict, after a certain prediction time T_{prediction}, whether the price of one of them has risen or fallen. 
 
@@ -36,6 +32,19 @@ The results of this binarization are visible in the figure below, where 20 data 
 ![image info](./Images/binary2.png)
 
 Thus, the input to the CNN is a 3D array, containing one binary image of size n_{rows} x n_{cols} for each of the time series/trends to be employed for the prediction of one of them. In other words, each of the trends taken into account has its own channel at the input. The output of the CNN is either 0 or 1, depending on whether the share price to be predicted has fallen or risen, respectively.
+
+## Script Description
+**LoadData.py:** This script downloads and processes all the specified stock prices. It outputs a .CSV file with the unprocessed
+    price time series as well as with the time series converted binary images, with which a Convolutional NN can operate.
+    
+    
+**trainModel.py:** This script here contains:
+* Data: the class in charge of defining a PyTorch dataset based on data stored with LoadData.py
+* CNN: the class defining the CNN which interprets the data in order to carry out a prognosis
+* Trainer: the class which carries out the training the CNN based on the specified dataset.
+
+
+**ParameterCheck.py:** This script invokes the class Trainer, in order to examine how different parameters affect the accuracy of the CNN in predicting trends.
 
 ## Dataset 1
 The first dataset employed in this study is made up of the following time series:
