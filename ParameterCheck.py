@@ -9,7 +9,7 @@ class ParametricStudy:
         self.tochange = []
         self.trainers = {}
         for k, v in self.parameters.items():
-            if isinstance(v, list) and k != 'tickers':
+            if isinstance(v, list) and k != 'tickers' and k != 'n_rows':
                 self.tochange.append(k)
                 self.trainers[k] = []
 
@@ -21,6 +21,8 @@ class ParametricStudy:
         for i, v in enumerate(values):
             case = self.parameters.copy()
             case[key] = v
+            if key == 'n_cols':
+                case['n_rows'] = v
             t = Trainer(**case)
             t.train(plot=False)
             self.trainers[key].append(t)
@@ -57,5 +59,10 @@ class ParametricStudy:
 
 
 
-ps = ParametricStudy(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], predict=5, start='2000-01-01', end='2010-01-01', interval='1d', T_space=[10, 15, 20, 25, 30])
+# ps = ParametricStudy(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], predict=5, start='2000-01-01', end='2010-01-01', interval='1d')
+tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
+start = '2020-08-05'
+end = '2020-10-03'
+interval = '5m'
+ps = ParametricStudy(tickers, predict=[i for i in range(len(tickers))], start=start, end=end, interval=interval)
 plt.show()

@@ -244,12 +244,12 @@ class Trainer:
         ax.scatter(incorrect[:, 0], incorrect[:, 1], marker='X', c='red', s=75)
 
 
-# t = Trainer(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], start='2000-01-01', end='2010-01-01')
+t = Trainer(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], start='2000-01-01', end='2010-01-01', n_series=20, T_pred=20, T_space=10, predict=5)
 # tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
 # start = '2020-08-05'
 # end = '2020-10-03'
 # interval = '5m'
 # t = Trainer(tickers, 2, start, end, interval)
-# t.train()
-# t.visualize_execution()
-# plt.show()
+t.train()
+t.visualize_execution()
+plt.show()
