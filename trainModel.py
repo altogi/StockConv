@@ -131,7 +131,7 @@ class CNN(nn.Module):
 class Trainer:
     """This class containes the bulk of the model's training, since it creates the dataset and the CNN and iterates through
     the specified epochs in order to train the model."""
-    def __init__(self, tickers, predict=0, start='2014-01-01', end='2018-01-01', interval='1d', n_series=20, T_pred=10, n_cols=30, n_rows=30, T_space=10):
+    def __init__(self, tickers, predict=8, start='2014-01-01', end='2018-01-01', interval='1d', n_series=30, T_pred=15, n_cols=30, n_rows=30, T_space=15):
         self.tickers = tickers
         self.predict = predict #Predict indexes tickers, indicating which of the securities to model/predict
         self.n_series = n_series
@@ -244,12 +244,12 @@ class Trainer:
         ax.scatter(incorrect[:, 0], incorrect[:, 1], marker='X', c='red', s=75)
 
 
-t = Trainer(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], start='2000-01-01', end='2010-01-01', n_series=20, T_pred=20, T_space=10, predict=5)
-# tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
-# start = '2020-08-05'
-# end = '2020-10-03'
-# interval = '5m'
-# t = Trainer(tickers, 2, start, end, interval)
+# t = Trainer(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], start='2000-01-01', end='2010-01-01', n_series=20, T_pred=20, T_space=10, predict=5)
+tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
+start = '2020-08-05'
+end = '2020-10-03'
+interval = '5m'
+t = Trainer(tickers, 2, start, end, interval)
 t.train()
 t.visualize_execution()
 plt.show()

@@ -60,9 +60,9 @@ class ParametricStudy:
 
 
 # ps = ParametricStudy(['CL=F', 'GC=F', '^GSPC', '^IXIC', '^FTSE', '^TNX'], predict=5, start='2000-01-01', end='2010-01-01', interval='1d')
-tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
-start = '2020-08-05'
-end = '2020-10-03'
-interval = '5m'
-ps = ParametricStudy(tickers, predict=[i for i in range(len(tickers))], start=start, end=end, interval=interval)
-plt.show()
+# tickers = ['GOOG', 'MSFT', 'AAPL', 'AMZN', 'MA', 'V', 'TSLA', 'BABA', 'JD', 'NTES', 'NVDA', 'ZLDSF', 'CRM', 'AMGN', 'HON', 'AMD', 'KL', 'SHOP', 'RNG']
+# start = '2020-08-05'
+# end = '2020-10-03'
+# interval = '5m'
+# ps = ParametricStudy(tickers, predict=8, start=start, end=end, interval=interval, n_series=30, T_space=15)
+# plt.show()
