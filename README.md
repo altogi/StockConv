@@ -46,7 +46,7 @@ Thus, the input to the CNN is a 3D array, containing one binary image of size n_
 
 **ParameterCheck.py:** This script invokes the class Trainer, in order to examine how different parameters affect the accuracy of the CNN in predicting trends.
 
-## Dataset 1
+## Results - Dataset 1
 The first dataset employed in this study is made up of the following time series:
 * Crude Oil Stock Price (CL=F)
 * Gold Stock Price (GC=F)
@@ -64,7 +64,7 @@ For other values of T_{prediction}, a variable directly setting how far ahead th
 
 ![image info](./Images/optim1.png)
 
-## Dataset 2
+## Results - Dataset 2
 The second dataset employed in this study is made up of the following share prices:
 * Alphabet Inc. (GOOG)
 * Microsoft Corporation (MSFT)
