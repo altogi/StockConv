@@ -55,10 +55,10 @@ The first dataset employed in this study is made up of the following time series
 * FTSE 100 (^FTSE)
 * Treasury Yield 10 Years (^TNX)
 
-These were extracted with a time interval of 1 day, from 2000 to 2010.
+These were extracted with a time interval of 1 day, from 2000 to 2010. 
 
 ### Optimum Results
-When carrying out the binarization of the dataset with n_{rows} = n_{cols} = 30, n_{series} = 20, and T_{prediction} = 20 days, the model predicted the evolution of the last time series with an accuracy of 55%. This selection of parameters was obtained by means of an intensive parametric study.
+When carrying out the binarization of the dataset with n_{rows} = n_{cols} = 30, n_{series} = 20, and T_{prediction} = 20 days, the model predicted the evolution of the last trend with an accuracy of 55%. This selection of parameters was obtained by means of an intensive parametric study.
 
 For other values of T_{prediction}, a variable directly setting how far ahead the particular trend is predicted, the trained CNN performed as is shown in the image below.
 
